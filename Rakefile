@@ -1,4 +1,3 @@
-=begin
 begin
   require 'bundler/setup'
 rescue LoadError
@@ -21,8 +20,6 @@ load 'rails/tasks/engine.rake'
 
 load 'rails/tasks/statistics.rake'
 
-
-
 require 'bundler/gem_tasks'
 
 require 'rake/testtask'
@@ -33,6 +30,4 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = false
 end
 
-
 task default: :test
-=end
