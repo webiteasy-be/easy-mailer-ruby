@@ -1,0 +1,47 @@
+<%
+   if @mail.nil?
+     return 'unknown mail'
+   end
+%>
+
+<nav class="actions">
+  <ul>
+    <li>
+      <%= link_to 'delete', easy_view_mail_path, method: :delete %>
+    </li>
+  </ul>
+</nav>
+
+<ul class="headers">
+  <% @mail.header.each_entry do |k, v| %>
+      <li>
+        <b><%= k.name %></b> <%= k.value %>
+      </li>
+  <% end %>
+</ul>
+
+<% if @mail.html_part && @mail.text_part %>
+    <!-- Multipart -->
+    <nav class="parts">
+      <ul>
+        <li class="<%= 'active' if params[:part] != 'text' %>">
+          <%= link_to 'html', url_for(part: 'html')%>
+        </li>
+        <li class="<%= 'active' if params[:part] == 'text' %>">
+          <%= link_to 'text', url_for(part: 'text' )%>
+        </li>
+      </ul>
+    </nav>
+
+    <iframe id="partIframe"
+            src="<%= easy_raw_mail_url(part: params[:part] || 'html') %>"
+            style="height: 100%; width: 100%; padding:0;margin:0;"
+            onload="resizeIframe(this);">
+    </iframe>
+<% else %>
+    <!-- Direct Body-->
+    <iframe src="<%= easy_raw_mail_url(part: nil)%>"
+            style="height: 100%; width: 100%; padding:0;margin:0;"
+            onload="resizeIframe(this);">
+    </iframe>
+<% end %>

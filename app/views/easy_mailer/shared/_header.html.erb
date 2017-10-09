@@ -1,0 +1,45 @@
+<header class="header">
+  <a class="brand" href="<%= root_path %>">EasyMailer</a>
+  <span style="font-size: 0.8em;"><%= link_to("v#{EasyMailer::VERSION}", 'https://github.com/webiteasy_be/easy-mailer-rails', target: '_blank') %></span>
+  <nav class="mode" style="float: right;">
+    <ul>
+      <li class="disabled">
+        templater
+      </li>
+      <li class="<%= 'active' if params[:controller] == 'easy_mailer/previewer' %>">
+        <%= link_to 'previewer', params[:mailer] && params[:model] && params[:controller] != 'easy_mailer/previewer'?
+                                       easy_draft_path(params.permit(:mailer, :model).to_h.symbolize_keys) :
+                                       easy_previewer_path %>
+
+      </li>
+      <li class="disabled">
+        subscriber
+      </li>
+      <% if EasyMailer.feature_enabled?(:tracker) %>
+          <li class="<%= 'active' if params[:controller] == 'easy_mailer/tracker' %>">
+            <% if params[:mail_id].present? && params[:controller] != 'easy_mailer/tracker'%>
+                <%= link_to 'tracker', easy_track_mail_path(params.permit(:mailer, :model, :mail_id).to_h.symbolize_keys) %>
+            <% elsif params[:mailer].present? && params[:model].present? && params[:controller] != 'easy_mailer/tracker' %>
+                <%= link_to 'tracker', easy_track_model_path(params.permit(:mailer, :model).to_h.symbolize_keys) %>
+            <% else %>
+                <%= link_to 'tracker', easy_tracker_path %>
+            <% end %>
+          </li>
+      <% end %>
+
+      <% if EasyMailer.feature_enabled?(:viewer) %>
+          <li class="<%= 'active' if params[:controller] == 'easy_mailer/viewer' %>">
+            <% if params[:mail_id].present? && params[:controller] != 'easy_mailer/viewer'%>
+                <%= link_to 'viewer', easy_view_mail_path(params.permit(:mailer, :model, :mail_id).to_h.symbolize_keys) %>
+            <% elsif params[:mailer].present? && params[:model].present? && params[:controller] != 'easy_mailer/viewer' %>
+                <%= link_to 'viewer', easy_view_model_path(params.permit(:mailer, :model).to_h.symbolize_keys) %>
+            <% else %>
+                <%= link_to 'viewer', easy_viewer_path %>
+            <% end %>
+          </li>
+      <% end %>
+      
+
+    </ul>
+  </nav>
+</header>

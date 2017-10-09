@@ -1,0 +1,121 @@
+<nav class="actions">
+  <ul>
+    <% if @draft.model.parameters.any? %>
+        <li>
+          <a href="#" onclick="var el = document.getElementById('email-arguments');if(el.style.display=='none'){el.style.display='block';}else{el.style.display='none';};">arguments</a>
+        </li>
+    <% end %>
+
+    <li>
+      <%= link_to 'Edit', easy_edit_template_path(
+                                params.permit([:part, :mailer, :model] + @draft.model.all_parameters(EasyMailer.mailer_args_prefix))
+                        ) %>
+    </li>
+
+    <% if EasyMailer.available_locales.present? %>
+        <li class="dropdown"> Languages
+          <ul>
+            <% EasyMailer.available_locales.each do |locale| %>
+                <li><%= link_to locale.upcase, url_for(params.to_unsafe_h.merge(locale: locale)) %></li>
+            <% end %>
+          </ul>
+        </li>
+    <% end %>
+
+    <li>|</li>
+    <li>
+      <%= form_tag easy_deliver_draft_path(params.permit([:locale, :mailer, :model] + @draft.model.all_parameters(EasyMailer.mailer_args_prefix))), method: :post do %>
+          Send to
+          <%= email_field_tag :to, (@email.is_a?(Exception)? nil: @email.to), placeholder: "Enter email", required: true %>
+          <%= submit_tag 'Send' %>
+      <% end %>
+    </li>
+  </ul>
+</nav>
+
+<% if @draft.model.parameters.any? %>
+    <%= form_tag '', method: :get do %>
+        <div id="email-arguments" style="display:<%= @email.is_a?(Exception) ? 'block' : 'none'%>;">
+          <table class="table" style="width:100%; text-align: left;">
+            <tr>
+              <th>Parameter</th>
+              <th>value</th>
+            </tr>
+            <% @draft.model.parameters.each_with_index do |param, ix| %>
+                <tr>
+                  <td>
+                    <%= param.last %>
+                  </td>
+                  <td>
+                    <%= text_field_tag (EasyMailer.mailer_args_prefix+param.last.to_s),
+                                       params[EasyMailer.mailer_args_prefix+param.last.to_s],
+                                       placeholder: param.last.to_s,
+                                       style: 'width:100%;'%>
+                  </td>
+                  <td>
+                    <%= '*' if param.first == :req %>
+                  </td>
+                </tr>
+            <% end %>
+          </table>
+          <%= submit_tag 'Update', name: nil %>
+        </div>
+    <% end %>
+<% end %>
+
+<% if @email.is_a?(Exception) %>
+    <%= @email.message %>
+<% else %>
+    <ul class="headers">
+      <% if @email.subject %><li><b>Subject</b> <%= @email.subject %></li><% end %>
+      <% if @email.from %><li><b>From</b> <%= @email.from.join(', ') %></li><% end %>
+      <% if @email.to %><li><b>To</b> <%= @email.to.join(', ') %></li><% end %>
+      <% if @email.cc %><li><b>Cc</b> <%= @email.cc.join(', ') %></li><% end %>
+      <% if @email.bcc %><li><b>Bcc</b> <%= @email.bcc.join(', ') %></li><% end %>
+    </ul>
+
+    <% if @email.html_part && @email.text_part %>
+        <nav class="parts">
+          <ul>
+            <li class="<%= 'active' if params[:part] == 'html' %>">
+              <%= link_to 'HTML', easy_draft_path(request.query_parameters.except(:utf8).merge(part: 'html')) %>
+            </li>
+            <li class="<%= 'active' if params[:part] == 'text' %>">
+              <%= link_to 'TEXT', easy_draft_path(request.query_parameters.except(:utf8).merge(part: 'text')) %>
+            </li>
+          </ul>
+        </nav>
+    <% end %>
+
+    <% if @email.html_part || @email.text_part || @email.body.present? %>
+        <iframe onload='resizeIframe(this);'
+                src="<%= easy_raw_draft_path(
+                                 params.permit(
+                                         [:mailer, :model, :locale, :part] +
+                                                 @draft.model.all_parameters(EasyMailer.mailer_args_prefix)
+                                 )
+                         ) %>"
+                frameborder="1" width="100%"></iframe>
+    <% end %>
+
+    <% if @email.attachments.present? %>
+        <ul class="attachments">
+          <li>Attachments:</li>
+          <li>
+            <ul>
+              <% @email.attachments.each do |attachment| %>
+                  <li>
+                    <%= link_to attachment.filename,
+                                easy_draft_attachment_path(
+                                        params.permit(
+                                                [:mailer, :model] +
+                                                        @draft.model.all_parameters(EasyMailer.mailer_args_prefix)
+                                        ).merge({ attachment: attachment.filename})) %>
+                  </li>
+              <% end %>
+            </ul>
+          </li>
+        </ul>
+    <% end %>
+<% end %>
+

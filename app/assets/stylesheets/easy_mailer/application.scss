@@ -1,0 +1,215 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+body, html {
+    height: 100%;
+}
+
+body {
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-weight: 100;
+}
+$textColor: #444;
+$linkColor: #ff9d61;
+
+a {
+    color: $linkColor;
+    text-decoration: none;
+
+
+}
+a.active,
+li.active > a{
+    color: darken($linkColor, 50%);
+}
+li.active > a {
+    border-bottom: 2px solid darken($linkColor, 50%);
+    padding-bottom: 3px;
+}
+
+header {
+    position: fixed;
+    left: 0;
+    z-index: 99;
+    padding: .75em;
+    width: 100%;
+    background-color: rgba(255,255,255, .95);
+}
+
+header {
+    top: 0;
+    box-shadow: 0 .0625em .3125em rgba(0,0,0, .15);
+
+    a.brand {
+        font: 400 2em/1 'Josefin Sans';
+    }
+}
+
+footer {
+    bottom: 0;
+    box-shadow: 0 -.0625em .3125em rgba(0,0,0, .15);
+}
+
+.container {
+    padding: 50px 15px;
+    min-height: 100%;
+
+    aside {
+        float: left;
+        width: 200px;
+    }
+
+    .content {
+        padding-left: 200px;
+    }
+}
+
+nav {
+    > ul {
+        padding: 0;
+        margin: 0;
+    }
+    > ul li {
+        padding: 5px 15px;
+        display: inline-block;
+    }
+
+    > ul li.disabled {
+        color: #CCC;
+    }
+
+    > ul li a:hover {
+        background-color: #EEE;
+    }
+
+    > ul li a {
+        margin: -5px -15px;
+        padding: 5px 15px;
+        display: inline-block;
+    }
+}
+
+nav.vertical {
+    > ul > li {
+        width: 100%;
+    }
+}
+
+nav.actions {
+    li {
+        padding: 5px 15px;
+        box-sizing: border-box;
+        display: inline-block;
+        position: relative;
+    }
+
+    a {
+        margin: -5px -15px;
+        padding: 5px 15px;
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+    }
+
+    li > ul {
+        width: 100%;
+    }
+
+    li > ul > li {
+        width: 100%;
+    }
+
+    > ul {
+        padding: 0;
+        margin: 0;
+
+        > li > ul {
+            display: none;
+            position: absolute;
+            left: 0;
+            top:0;
+            background-color: #FFF;
+            box-shadow: 0 .0625em .3125em rgba(0,0,0, .15);
+        }
+    }
+
+    li a:hover,
+    li.dropdown:hover{
+        background-color: #EEE;
+        > ul {
+            display: block;
+        }
+    }
+}
+
+.alert-danger {
+    padding: 15px;
+    background-color: #ffc1a6;
+    border: solid 1px #ff8562;
+    border-radius: 5px;
+}
+
+ul.headers {
+    padding:15px 0;
+    margin:0;
+    list-style: none;
+
+    li {
+        padding: 0;margin:0;
+
+        b {
+            color: #666;
+            padding-right: 0.5em;
+        }
+    }
+}
+
+nav.actions {
+    background-color: #F7F7F7;
+    border-radius: 5px;
+    margin-top:5px;
+}
+
+iframe {
+    border-left:none;
+    border-right:none;
+    border-top: solid 1px #CCC;
+    border-bottom: solid 1px #CCC;
+}
+
+table.table {
+    border-top: solid 2px #333;
+    border-bottom: solid 2px #333;
+    width:100%;
+}
+table.table {
+    th {
+        border-bottom: solid 0.5px #000;
+
+    }
+}
+
+#email-arguments {
+    padding: 15px 5px;
+    background-color: #FAFAFA;
+    margin: 2px 0 10px 0;
+}
+
+a span.badge {
+    color: $textColor;
+}

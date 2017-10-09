@@ -1,0 +1,52 @@
+<aside class="sidebar">
+  <!-- TODO if default mailer is not in mailers !!! -->
+  <% EasyMailer::Core::Mailer.all.sort_by(&:name).each do |mailer| %>
+      <nav class="vertical">
+        <h3 class="title nav_title">
+          <%= mailer.name.humanize %>
+          <% if params[:controller] == 'easy_mailer/previewer' %>
+              (<%= mailer.models.length %>)
+          <% end %>
+        </h3>
+        <ul>
+          <% if (params[:controller] == 'easy_mailer/viewer') &&
+                  mailer.name == EasyMailer.default_mailer %>
+              <li class="<%=  (mailer.name == params[:mailer] && EasyMailer.default_model == params[:model]) ? 'active' : '' %>">
+                <%= link_to "#{EasyMailer.default_model.humanize} (default)",
+                            easy_draft_path(mailer: mailer.name, model: EasyMailer.default_model) %>
+
+                (<%= Dir[Rails.root.join(EasyMailer.mail_dir, '*')].length %>)
+
+              </li>
+          <% elsif (params[:controller] == 'easy_mailer/tracker') &&
+                  mailer.name == EasyMailer.default_mailer %>
+              <li class="<%=  (mailer.name == params[:mailer] && EasyMailer.default_model == params[:model]) ? 'active' : '' %>">
+                <%= link_to "#{EasyMailer.default_model.humanize} (default)",
+                            easy_track_model_path(mailer: mailer.name, model: EasyMailer.default_model) %>
+
+              </li>
+          <% end %>
+          <% mailer.models.sort_by(&:name).each do |draft| %>
+              <% if params[:controller] == 'easy_mailer/previewer' %>
+                  <li class="<%=  (mailer.name == params[:mailer] && draft.name == params[:model]) ? 'active' : '' %>">
+                    <%= link_to draft.name.humanize,
+                                easy_draft_path(mailer: mailer.name, model: draft.name) %></li>
+
+              <% elsif params[:controller] =='easy_mailer/tracker' %>
+                  <li class="<%=  (mailer.name == params[:mailer] && draft.name == params[:model]) ? 'active' : '' %>">
+                    <%= link_to easy_track_model_path(mailer: mailer.name, model: draft.name) do %>
+                        <%= draft.name.humanize %>
+                    <% end %>
+                  </li>
+              <% elsif params[:controller] =='easy_mailer/viewer' %>
+                  <li class="<%=  (mailer.name == params[:mailer] && draft.name == params[:model]) ? 'active' : '' %>">
+                    <%= link_to easy_view_model_path(mailer: mailer.name, model: draft.name) do %>
+                        <%= draft.name.humanize %>
+                    <% end %>
+                  </li>
+              <% end %>
+          <% end %>
+        </ul>
+      </nav>
+  <% end %>
+</aside>

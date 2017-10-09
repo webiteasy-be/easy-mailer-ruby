@@ -1,0 +1,17 @@
+<h2><%= Dir[Rails.root.join(EasyMailer.mail_dir, '**/*')].length %> emails found</h2>
+
+<table class="table">
+  <tr>
+    <th>Message-Id</th>
+  </tr>
+  <% @mails.each do |mail| %>
+      <tr>
+        <td>
+          <%= link_to mail.to_s, easy_view_mail_path(
+                                       mail_id: mail['Message-Id'],
+                                       mailer: mail['Easy-Mailer'],
+                                       model: mail['Easy-Model']) %>
+        </td>
+      </tr>
+  <% end %>
+</table>

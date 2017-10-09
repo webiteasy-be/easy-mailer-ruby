@@ -1,0 +1,49 @@
+<%
+   if defined?( message ).nil?
+     message = @message
+   end
+
+   if defined?( resize_iframe ).nil?
+     resize_iframe = false
+   end
+%>
+
+<ul class="headers">
+  <% message[:headers].each do |k, v| %>
+      <li>
+        <b><%= k %></b> <%= v %>
+      </li>
+  <% end %>
+</ul>
+
+<% v_params = params.permit(:action, :controller, :part, :email, :id) %>
+<% part_params = params.permit(:part) %>
+<% if message[:body].is_a? Array %>
+    <!-- Multipart -->
+    <nav class="parts">
+      <ul>
+        <% message[:body].each_with_index do |sub_message, ix| %>
+            <li class="<%= 'active' if (params[:part] ||'0').split(',').last == ix.to_s%>">
+              <%= link_to content_type_to_part_type(sub_message[:headers]['Content-Type']) || ix,
+                          url_for(
+                                  part: ((params[:part] || '0').split(',')[0..-2] + [ix]).join(','),
+                                  part_type: (sub_message[:headers]['Content-Type'] || '').start_with?('text/plain') ? 'text/plain' : nil)%>
+            </li>
+        <% end %>
+      </ul>
+    </nav>
+
+    <iframe id="partIframe"
+            src="<%= easy_raw_mail_url(part: ((params[:part] || '0').split(',')+[0]).join(',')) %>"
+            style="height: 100%; width: 100%; padding:0;margin:0;"
+            onload='<%= 'resizeIframe(this);' if resize_iframe%>'>
+    </iframe>
+<% else %>
+    <!-- Direct Body-->
+    <iframe src="<%= easy_raw_mail_url(
+                             part: ((params[:part] || '0').split(',')+[0]).join(','),
+                             part_type: (@message[:headers]['Content-Type'] || '').start_with?('text/plain') ? 'text/plain' : nil) %>"
+            style="height: 100%; width: 100%; padding:0;margin:0;"
+            onload='<%= 'resizeIframe(this);' if resize_iframe%>'>
+    </iframe>
+<% end %>

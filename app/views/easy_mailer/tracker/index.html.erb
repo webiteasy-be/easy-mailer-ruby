@@ -1,0 +1,38 @@
+<% EasyMailer::Tracker::Configurator.validate_db.each do |error| %>
+  <div class="alert-danger">
+    <%= error %>
+  </div>
+<% end if false %>
+<% EasyMailer::Tracker::Configurator.validate_global_options.each do |error| %>
+  <div class="alert-danger">
+    <%= error %>
+  </div>
+<% end if false %>
+
+<h2>Tracker</h2>
+
+<table class="table">
+  <%
+     columns = [:tos, :created_at, :sent_at , :opened_at , :clicked_at]
+     columns.select! {|c| EasyMailer::Tracker::Options.adapter.public_method_defined?(c)}
+  %>
+
+  <tr>
+    <% columns.each do |c| %>
+        <th><%= c.to_s.humanize %></th>
+    <% end %>
+  </tr>
+  <% if (@mail_records || []).each do |model| %>
+      <tr>
+        <% columns.each do |c| %>
+            <td>
+              <%= link_to easy_track_mail_path(params.permit(:mailer, :model).to_h.symbolize_keys.merge(mail_id: model.id) ) do %>
+              <%= model.send(c) %>
+                  <% end %>
+            </td>
+        <% end %>
+      </tr>
+  <% end.empty? %>
+      <tr><td colspan="<%= columns.length %>" align="center">No result</td></tr>
+  <% end %>
+</table>

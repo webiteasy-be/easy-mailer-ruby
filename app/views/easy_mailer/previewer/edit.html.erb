@@ -1,0 +1,37 @@
+<!-- https://codemirror.net/mode/htmlmixed/index.html -->
+<!-- https://ace.c9.io/#nav=embedding -->
+<%= form_tag(easy_update_template_path(
+                     params.permit(
+                             [:mailer, :email, :part] +
+                                     @draft.all_parameters(EasyMailer.mailer_args_prefix)
+                     )), method: :patch) do %>
+    <nav class="actions">
+      <ul>
+        <li>
+          <%= link_to 'Show', easy_draft_path(
+                                    params.permit(
+                                            [:mailer, :email] +
+                                                    @draft.all_parameters(EasyMailer.mailer_args_prefix)
+                                    )) %>
+        </li>
+
+        <li>|</li>
+
+        <li>
+          <%= submit_tag 'Update' %>
+        </li>
+      </ul>
+    </nav>
+
+    <%= text_area_tag :body, @template, id:'codemirror' %>
+<% end %>
+
+<script>
+    var myTextArea = document.getElementById('codemirror');
+
+    var myCodeMirror = CodeMirror.fromTextArea(myTextArea, {
+        mode: "application/x-ejs",
+        lineNumbers: true,
+        indentUnit: 4,
+        indentWithTabs: true});
+</script>

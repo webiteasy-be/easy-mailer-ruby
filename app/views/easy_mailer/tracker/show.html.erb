@@ -1,0 +1,36 @@
+<%
+   if @mail_record.nil?
+     return 'unknown mail'
+   end
+%>
+<nav class="actions">
+  <ul>
+    <li>
+      <%= link_to 'delete', easy_track_mail_path, method: :delete %>
+    </li>
+  </ul>
+</nav>
+
+
+<table class="table">
+  <%
+     columns = [:tos, :created_at, :sent_at , :opened_at , :clicked_at]
+     columns.select! {|c| EasyMailer::Tracker::Options.adapter.public_method_defined?(c)}
+  %>
+
+  <tr>
+    <% columns.each do |c| %>
+        <th><%= c.to_s.humanize %></th>
+    <% end %>
+  </tr>
+  <% if [@mail_record].each do |model| %>
+      <tr>
+        <% columns.each do |c| %>
+            <td><%= model.send(c) %></td>
+        <% end %>
+      </tr>
+  <% end.empty? %>
+      <tr><td colspan="<%= columns.length %>"></td></tr>
+  <% end %>
+</table>
+

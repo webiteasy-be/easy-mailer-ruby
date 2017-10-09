@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Easy Mailer</title>
+  <%= stylesheet_link_tag    "easy_mailer/application", :media => "all" %>
+  <%= javascript_include_tag "easy_mailer/application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+  <%= render 'easy_mailer/shared/header' %>
+
+  <div class="container">
+    <%= render 'easy_mailer/shared/sidebar' %>
+
+    <% if flash[:alert].present? %>
+      <p class="alert"><%= flash[:alert] %></p>
+    <% end %>
+
+    <div class="content">
+      <% if params[:controller] == 'easy_mailer/viewer' && Rails.configuration.action_mailer.delivery_method != :files %>
+          <div class="alert-danger">
+            <p>You must use <code>action_mailer.delivery_method = :files</code> to have your sent mails available in the
+              <b>viewer</b>. Current value is <code><%= Rails.configuration.action_mailer.delivery_method.inspect %></code>.
+              There is a lot of chance you will not see anything here.</p>
+            <p>
+              To change the value, edit your environment file to have something like that :
+            </p>
+<pre>Rails.application.configure do
+  ...
+
+  config.action_mailer.delivery_method = :files
+
+  ...
+end</pre>
+          </div>
+      <% end %>
+      <%= yield %>
+    </div>
+  </div>
+</body>
+</html>
