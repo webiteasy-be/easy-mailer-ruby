@@ -36,6 +36,14 @@ module EasyMailer
       def self.adapter
         @adapter ||= ::EasyMailer::MailModel
       end
+
+      def self.message_id_attr=(attr)
+        @message_id_attr = attr
+      end
+
+      def self.message_id_attr
+        @message_id_attr ||= :message_id
+      end
     end
   end
 end

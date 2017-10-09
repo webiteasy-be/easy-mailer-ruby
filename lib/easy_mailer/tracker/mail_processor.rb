@@ -15,7 +15,7 @@ module EasyMailer
 
           mail.message_id ||= ::Mail.random_tag
 
-          @mail_model.token = mail.message_id if EasyMailer::Tracker::Options.adapter.primary_key == 'token'
+          @mail_model.send("#{EasyMailer::Tracker::Options.message_id_attr}=", mail.message_id)
 
           @mail_model.tos = Array(mail.to).join(", ") if @mail_model.respond_to?(:tos=)
           @mail_model.user = options[:user]
@@ -49,7 +49,7 @@ module EasyMailer
               controller:'easy_mailer/tracker',
               action:'open',
               format: :gif,
-              mail_id: @mail_model.id,
+              mail_id: @mail_model.send(EasyMailer::Tracker::Options.message_id_attr),
               signature: OpenSSL::HMAC.hexdigest(
                   OpenSSL::Digest.new("sha1"),
                   EasyMailer::Tracker.signature_secret,
@@ -92,7 +92,7 @@ module EasyMailer
                       host: options[:host],
                       controller: 'easy_mailer/tracker',
                       action: 'link',
-                      mail_id: @mail_model.id,
+                      mail_id: @mail_model.send(EasyMailer::Tracker::Options.message_id_attr),
                       url: link['href'],
                       signature: OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha1"), EasyMailer::Tracker.signature_secret, link["href"])
                   )
