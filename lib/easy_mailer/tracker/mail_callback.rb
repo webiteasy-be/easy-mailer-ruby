@@ -5,11 +5,12 @@ module EasyMailer
       attr_accessor :mail
 
       def initialize(mail)
-        @mail
+        @mail = mail
       end
 
       def observe
-        @mail_model = EasyMailer::Tracker::Options.adapter.where(token: @mail.message_id)
+        @mail_model = EasyMailer::Tracker::Options.adapter.find_by(
+            EasyMailer::Tracker::Options.message_id_attr => @mail.message_id)
 
         return unless @mail_model
 

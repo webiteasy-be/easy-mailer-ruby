@@ -43,4 +43,4 @@ end
 
 ::Mail::Message.send :include, EasyMailer::Mail
 ::Mail.register_interceptor EasyMailer::Mail::Interceptor.new
-#::Mail.register_observer EasyMailer::Mail::Observer.new
+::Mail.register_observer EasyMailer::Mail::Observer.new
