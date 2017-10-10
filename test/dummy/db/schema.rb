@@ -12,8 +12,7 @@
 
 ActiveRecord::Schema.define(version: 20171009120001) do
 
-  create_table "easy_mailer_mails", id: false, force: :cascade do |t|
-    t.string "message_id"
+  create_table "easy_mailer_mails", primary_key: "message_id", id: :string, force: :cascade do |t|
     t.string "tos"
     t.integer "user_id"
     t.string "user_type"
@@ -24,6 +23,7 @@ ActiveRecord::Schema.define(version: 20171009120001) do
     t.datetime "sent_at"
     t.datetime "opened_at"
     t.datetime "clicked_at"
+    t.index ["message_id"], name: "sqlite_autoindex_easy_mailer_mails_1", unique: true
   end
 
   create_table "users", force: :cascade do |t|
