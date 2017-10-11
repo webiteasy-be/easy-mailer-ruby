@@ -9,6 +9,33 @@ EasyMailer.setup do |config|
     #
     # tracker_config.host = "http://tracker.example.com/"
 
+    # Use ActiveRecordAdapter. Note, this is for now the only available adapter
+    #
+    # == example
+    #
+    # tracker_config.adapter = :active_record, {
+    #   # An ActiveRecord subclass. Must have a primary key
+    #   model: EasyMailer::MailModel,
+    #
+    #   # Matching between attributes used by EasyMailer Tracker adapter and
+    #   # specified model attributes. If attribute is not specified in this matching,
+    #   # default value is used
+    #   attributes: {
+    #     # Must be a string attribute.
+    #     message_id: :message_id,
+    #
+    #     # Must be a nullable string attribute
+    #     mailer: :mailer,
+    #
+    #     # Must be a nullable string attribute
+    #     model: :model
+    #
+    #     #
+    #
+    #   }
+    # }
+    #
+    tracker_config.adapter = :active_record
   end
 
   # Enable and setup default options for Viewer

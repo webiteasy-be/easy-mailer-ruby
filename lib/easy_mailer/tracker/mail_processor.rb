@@ -10,32 +10,14 @@ module EasyMailer
       BODY_TAG_REGEX = /<\/body>/i
 
       def process
-        if options[:enabled]
-          @mail_model = EasyMailer::Tracker::Options.adapter.new
+        return unless options[:enabled]
 
-          mail.message_id ||= ::Mail.random_tag
+        mail.message_id ||= ::Mail.random_tag
 
-          @mail_model.send("#{EasyMailer::Tracker::Options.message_id_attr}=", mail.message_id)
+        track_open if options[:open]
+        track_links if options[:utm_params] || options[:click]
 
-          @mail_model.tos = Array(mail.to).join(", ") if @mail_model.respond_to?(:tos=)
-          @mail_model.user = options[:user]
-          @mail_model.mailer = options[:mailer] if @mail_model.respond_to?(:mailer=)
-          @mail_model.model = options[:model] if @mail_model.respond_to?(:model=)
-
-          UTM_PARAMETERS.each do |k|
-            @mail_model.send("#{k}=", options[k.to_sym]) if @mail_model.respond_to?("#{k}=")
-          end
-
-          @mail_model.assign_attributes(options[:mail_model_extra] || {})
-
-          track_open if options[:open]
-          track_links if options[:utm_params] || options[:click]
-
-          @mail_model.subject = mail.subject if @mail_model.respond_to?(:subject=)
-          @mail_model.message = mail.encoded if @mail_model.respond_to?(:message=)
-
-          @mail_model.save!
-        end
+        EasyMailer::Tracker::Options.adapter.process(mail, options)
       end
 
       private
@@ -46,14 +28,15 @@ module EasyMailer
           # Build url to the 1px tracking image
           url = url_for(
               host: options[:host],
+              port: options[:port],
               controller:'easy_mailer/tracker',
               action:'open',
               format: :gif,
-              mail_id: @mail_model.send(EasyMailer::Tracker::Options.message_id_attr),
+              mail_id: mail.message_id,
               signature: OpenSSL::HMAC.hexdigest(
                   OpenSSL::Digest.new("sha1"),
                   EasyMailer::Tracker.signature_secret,
-                  @mail_model.id || 'nil')
+                  mail.message_id || 'nil')
           )
 
           pixel = ActionController::Base.helpers.image_tag(url, size: "1x1", alt: "")
@@ -90,9 +73,10 @@ module EasyMailer
               link['href'] =
                   url_for(
                       host: options[:host],
+                      port: options[:port],
                       controller: 'easy_mailer/tracker',
                       action: 'link',
-                      mail_id: @mail_model.send(EasyMailer::Tracker::Options.message_id_attr),
+                      mail_id: mail.message_id,
                       url: link['href'],
                       signature: OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha1"), EasyMailer::Tracker.signature_secret, link["href"])
                   )

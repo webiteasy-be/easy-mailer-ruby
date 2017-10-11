@@ -13,24 +13,24 @@
 
 
 <table class="table">
-  <%
-     columns = [:tos, :created_at, :sent_at , :opened_at , :clicked_at]
-     columns.select! {|c| EasyMailer::Tracker::Options.adapter.public_method_defined?(c)}
-  %>
-
   <tr>
-    <% columns.each do |c| %>
+    <!-- TODO this will only work with ActiveRecord adapter -->
+    <% EasyMailer::Tracker::Options.adapter.settings[:attributes].keys.each do |c| %>
         <th><%= c.to_s.humanize %></th>
     <% end %>
   </tr>
   <% if [@mail_record].each do |model| %>
       <tr>
-        <% columns.each do |c| %>
+        <% EasyMailer::Tracker::Options.adapter.settings[:attributes].values.each do |c| %>
             <td><%= model.send(c) %></td>
         <% end %>
       </tr>
   <% end.empty? %>
-      <tr><td colspan="<%= columns.length %>"></td></tr>
+      <tr>
+        <td colspan="<%= EasyMailer::Tracker::Options.adapter.settings[:attributes].size %>">
+          No content
+        </td>
+      </tr>
   <% end %>
 </table>
 

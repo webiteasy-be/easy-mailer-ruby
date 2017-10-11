@@ -14,6 +14,7 @@ module EasyMailer
                    utm_term: nil,
                    utm_content: nil,
                    host: nil,
+                   port: nil,
                    utm_campaign: proc { |mail| mail.model.name },
                    mail_model_extra: nil # Hash of attributes to be passed to the mail model before being saved
 
@@ -29,12 +30,18 @@ module EasyMailer
         end
       end
 
-      def self.adapter=(adapter)
-        @adapter = adapter
+      def self.adapter=(*args)
+        adapter_name = args.shift
+        options = args.shift || {}
+        adapter_name = "EasyMailer::Tracker::Adapter::#{adapter_name.to_s.camelize}Adapter"
+
+        require adapter_name.underscore
+
+        @adapter = adapter_name.constantize.new(options)
       end
 
       def self.adapter
-        @adapter ||= ::EasyMailer::MailModel
+        @adapter
       end
 
       def self.message_id_attr=(attr)

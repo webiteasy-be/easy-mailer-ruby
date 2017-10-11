@@ -46,9 +46,9 @@ module EasyMailer
         def process(mail, processor_options={})
 
           if EasyMailer.feature_enabled?(:tracker) &&
-              EasyMailer::Tracker::Options.adapter == self.settings[:model]
-
-            # TODO update these conditions when migrating tracker to adapter system
+              defined?(EasyMailer::Tracker::Adapter::ActiveRecordAdapter) &&
+              EasyMailer::Tracker::Options.adapter.is_a?(EasyMailer::Tracker::Adapter::ActiveRecordAdapter) &&
+              EasyMailer::Tracker::Options.adapter.settings[:model] == self.settings[:model]
 
             # tracker is enabled + using ActiveRecord adapter + using the same model
             # => will take care about saving everything

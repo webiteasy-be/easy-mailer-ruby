@@ -35,7 +35,8 @@ Rails.application.configure do
 #  config.action_mailer.delivery_method = :test
   config.action_mailer.delivery_method = :files
   config.action_mailer.default_url_options = {
-      host: 'easymailer.example.com'
+      host: 'http://localhost',
+      port: 3000
   }
 
   # Print deprecation notices to the stderr.

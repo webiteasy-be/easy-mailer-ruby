@@ -12,6 +12,7 @@ module EasyMailer
           default_url_options = Rails.configuration.action_mailer.default_url_options || {}
 
           EasyMailer::Tracker::Options.host = default_url_options[:host]
+          EasyMailer::Tracker::Options.port = default_url_options[:port]
         end
 
         yield(EasyMailer::Tracker::Options) if block_given?

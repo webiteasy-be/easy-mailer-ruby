@@ -9,12 +9,7 @@ module EasyMailer
       end
 
       def observe
-        @mail_model = EasyMailer::Tracker::Options.adapter.find_by(
-            EasyMailer::Tracker::Options.message_id_attr => @mail.message_id)
-
-        return unless @mail_model
-
-        @mail_model.update(sent_at: Time.now) if @mail_model.respond_to?(:sent_at=) && @mail_model.sent_at.nil?
+        EasyMailer::Tracker::Options.adapter.mark_sent(@mail.message_id)
       end
     end
   end
