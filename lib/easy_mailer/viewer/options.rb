@@ -6,7 +6,7 @@ module EasyMailer
 
       opt_accessor enabled: true
 
-      def self.adapter=(args)
+      def self.adapter=(*args)
         adapter_name = args.shift
         options = args.shift || {}
         adapter_name = "EasyMailer::Viewer::Adapter::#{adapter_name.to_s.camelize}Adapter"
