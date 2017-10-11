@@ -32,7 +32,7 @@ module EasyMailer
           track_links if options[:utm_params] || options[:click]
 
           @mail_model.subject = mail.subject if @mail_model.respond_to?(:subject=)
-          @mail_model.body = mail.to_s if @mail_model.respond_to?(:body=)
+          @mail_model.message = mail.encoded if @mail_model.respond_to?(:message=)
 
           @mail_model.save!
         end

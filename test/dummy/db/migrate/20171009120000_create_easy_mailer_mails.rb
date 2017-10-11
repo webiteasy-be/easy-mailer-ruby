@@ -8,6 +8,7 @@ class CreateEasyMailerMails < ActiveRecord::Migration[5.0]
       t.string :mailer, null: true
       t.string :model, null: true
       t.string :utm_medium, null: true
+      t.text :message, null: true
       t.datetime "created_at", null: true
       t.datetime "sent_at", null: true
       t.datetime "opened_at", null: true

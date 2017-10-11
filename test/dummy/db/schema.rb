@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20171009120001) do
     t.string "mailer"
     t.string "model"
     t.string "utm_medium"
+    t.text "message"
     t.datetime "created_at"
     t.datetime "sent_at"
     t.datetime "opened_at"
