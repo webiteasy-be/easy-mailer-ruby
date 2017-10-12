@@ -22,14 +22,16 @@
         </li>
     <% end %>
 
-    <li>|</li>
-    <li>
-      <%= form_tag easy_deliver_draft_path(params.permit([:locale, :mailer, :model] + @draft.model.all_parameters(EasyMailer.mailer_args_prefix))), method: :post do %>
-          Send to
-          <%= email_field_tag :to, (@email.is_a?(Exception)? nil: @email.to), placeholder: "Enter email", required: true %>
-          <%= submit_tag 'Send' %>
-      <% end %>
-    </li>
+    <% unless @email.is_a?(Exception) %>
+        <li>|</li>
+        <li>
+          <%= form_tag easy_deliver_draft_path(params.permit([:locale, :mailer, :model] + @draft.model.all_parameters(EasyMailer.mailer_args_prefix))), method: :post do %>
+              Send to
+              <%= email_field_tag :to, @email.to, placeholder: "Enter email", required: true %>
+              <%= submit_tag 'Send' %>
+          <% end %>
+        </li>
+    <% end %>
   </ul>
 </nav>
 
