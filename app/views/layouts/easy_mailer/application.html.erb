@@ -5,6 +5,10 @@
   <%= stylesheet_link_tag    "easy_mailer/application", :media => "all" %>
   <%= javascript_include_tag "easy_mailer/application" %>
   <%= csrf_meta_tags %>
+
+  <% if content_for? :head %>
+      <%= yield :head %>
+  <% end %>
 </head>
 <body>
   <%= render 'easy_mailer/shared/header' %>
