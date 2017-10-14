@@ -15,8 +15,6 @@ module EasyMailer
         if EasyMailer.feature_enabled?(:viewer)
           EasyMailer::Viewer::MailProcessor.new(mail).process
         end
-
-        mail.perform_deliveries = false
       end
     end
   end
