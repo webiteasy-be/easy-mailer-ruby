@@ -54,6 +54,16 @@ module EasyMailer
 
       @tracker ||= EasyMailer::Tracker
     end
+
+    def subscriber_enabled?
+      @subscriber != nil && EasyMailer::Subscriber::Options[:enabled]
+    end
+
+    def subscriber
+      require 'easy_mailer/subscriber'
+
+      @subscriber ||= EasyMailer::Subscriber
+    end
   end
 end
 

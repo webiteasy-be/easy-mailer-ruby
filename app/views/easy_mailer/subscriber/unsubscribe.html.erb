@@ -1,0 +1,16 @@
+<div style="text-align: center; max-width: 400px; width:80%; margin:auto;">
+  <div style="background-color: #F7F7F7; border: solid 1px #CCC; padding: 15px;">
+    <% if @success === true %>
+        <p>You have been successfully removed from the list <%= params[:model] %> of the group <%= params[:mailer] %></p>
+    <% else %>
+        <p>Do you confirm you want to unsubscribe to the list <%= params[:model] %> of the group <%= params[:mailer] %> ?</p>
+        <form method="get">
+          <% request.query_parameters.each do |k, v| %>
+              <input type="hidden" name="<%= k %>" value="<%= v %>" />
+          <% end %>
+          <input type="hidden" name="confirm" value="true" />
+          <button type="submit">Confirm</button>
+        </form>
+    <% end %>
+  </div>
+</div>

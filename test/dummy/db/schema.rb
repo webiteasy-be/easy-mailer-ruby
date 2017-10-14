@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171009120001) do
+ActiveRecord::Schema.define(version: 20171009120002) do
 
   create_table "easy_mailer_mails", primary_key: "message_id", id: :string, force: :cascade do |t|
     t.string "tos"
@@ -24,7 +24,17 @@ ActiveRecord::Schema.define(version: 20171009120001) do
     t.datetime "sent_at"
     t.datetime "opened_at"
     t.datetime "clicked_at"
+    t.datetime "bounced_at"
+    t.datetime "unsubscribed_at"
     t.index ["message_id"], name: "sqlite_autoindex_easy_mailer_mails_1", unique: true
+  end
+
+  create_table "easy_mailer_subscriptions", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "mailer", null: false
+    t.string "model", null: false
+    t.datetime "subscribed_at"
+    t.datetime "unsubscribed_at"
   end
 
   create_table "users", force: :cascade do |t|

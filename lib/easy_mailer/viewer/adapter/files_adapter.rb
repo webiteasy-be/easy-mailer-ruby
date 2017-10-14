@@ -90,6 +90,7 @@ module EasyMailer
 
             # Nothing to do, it will already be saved as expected in options
           else
+            # TODO test this case
             mail.header[self.settings[:header_model]] = processor_options[:model]
             mail.header[self.settings[:header_mailer]] = processor_options[:mailer]
 

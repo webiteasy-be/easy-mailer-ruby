@@ -9,6 +9,12 @@ EasyMailer::Engine.routes.draw do
   patch 'previewer/:mailer/:model'                    => 'previewer#update',          as: :easy_update_template
   post  'previewer/:mailer/:model/deliver'            => 'previewer#deliver',         as: :easy_deliver_draft
 
+  ##### SUBSCRIBER
+  get   'subscriber'                                  => 'subscriber#index',          as: :easy_subscriber
+  get   'subscriber/:mailer/:model'                   => 'subscriber#model_index',    as: :easy_model_subscriber
+  get   'subscriber/:mailer/:model/unsubscribe'       => 'subscriber#unsubscribe',    as: :easy_model_unsubscribe
+  get   'subscriber/:mailer/:model/subscribe'         => 'subscriber#subscribe',      as: :easy_model_subscribe
+
   get   'viewer'                                      => 'viewer#index',              as: :easy_viewer
   get   'viewer/:mail_id'                             => 'viewer#show',               as: :easy_view_mail
   # TODO with this route, "raw" model is not allowed

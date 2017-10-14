@@ -13,6 +13,8 @@ class CreateEasyMailerMails < ActiveRecord::Migration[5.0]
       t.datetime "sent_at", null: true
       t.datetime "opened_at", null: true
       t.datetime "clicked_at", null: true
+      t.datetime :bounced_at, null: true
+      t.datetime :unsubscribed_at, null: true
     end
   end
 end

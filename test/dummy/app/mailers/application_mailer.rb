@@ -7,4 +7,10 @@ class ApplicationMailer < ActionMailer::Base
 
     mail(to: 'hello@example.com', cc: email, subject: subject)
   end
+
+  def newsletter(email, subject, message)
+    @message = message
+
+    mail(to: email, subject: subject)
+  end
 end

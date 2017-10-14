@@ -1,5 +1,9 @@
 EasyMailer.setup do |config|
 
+  config.subscriber.setup do |subscriber_config|
+    subscriber_config.adapter = :active_record
+  end
+
   # Enable and setup default options for Tracker
   config.tracker.setup do |tracker_config|
 

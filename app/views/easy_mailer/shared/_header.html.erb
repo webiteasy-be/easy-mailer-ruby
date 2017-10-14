@@ -12,9 +12,21 @@
                                        easy_previewer_path %>
 
       </li>
-      <li class="disabled">
-        subscriber
-      </li>
+
+      <% if EasyMailer.feature_enabled?(:subscriber) %>
+          <li class="<%= 'active' if params[:controller] == 'easy_mailer/subscriber' %>">
+            <% if params[:mailer].present? && params[:model].present? && params[:controller] != 'easy_mailer/subscriber' %>
+                <%= link_to 'subscriber', easy_model_subscriber_path(params.permit(:mailer, :model).to_h.symbolize_keys) %>
+            <% else %>
+                <%= link_to 'subscriber', easy_subscriber_path %>
+            <% end %>
+          </li>
+      <% else %>
+          <li class="disabled">
+            subscriber
+          </li>
+      <% end %>
+
       <% if EasyMailer.feature_enabled?(:tracker) %>
           <li class="<%= 'active' if params[:controller] == 'easy_mailer/tracker' %>">
             <% if params[:mail_id].present? && params[:controller] != 'easy_mailer/tracker'%>

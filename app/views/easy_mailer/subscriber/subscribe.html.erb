@@ -1,0 +1,17 @@
+<div style="text-align: center; max-width: 400px; width:80%; margin:auto;">
+  <div style="background-color: #F7F7F7; border: solid 1px #CCC; padding: 15px;">
+    <% if @success === true %>
+        <p>You have successfully been added to the list <%= params[:model] %> of the group <%= params[:mailer] %></p>
+    <% else %>
+        <p>Subscribe to the list <%= params[:model] %> of the group <%= params[:mailer] %> ?</p>
+        <form method="get">
+          <% request.query_parameters.each do |k, v| %>
+              <input type="hidden" name="<%= k %>" value="<%= v %>" />
+          <% end %>
+          <input type="hidden" name="confirm" value="true" />
+          <input type="email" placeholder="Email" name="email" value="<%= params[:email] %>">
+          <button type="submit">Confirm</button>
+        </form>
+    <% end %>
+  </div>
+</div>

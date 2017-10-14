@@ -17,6 +17,11 @@ module EasyMailer
             @easy_mailer_options ||= {}
           end
 
+          def subscriber_options
+            self.easy_mailer_options[:subscriber] ||= EasyMailer::Subscriber::Options.new
+            #@tracker_options ||= EasyMailer::Tracker::Options.new
+          end
+
           def tracker_options
             self.easy_mailer_options[:tracker] ||= EasyMailer::Tracker::Options.new
             #@tracker_options ||= EasyMailer::Tracker::Options.new

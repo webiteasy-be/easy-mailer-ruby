@@ -1,0 +1,99 @@
+<% content_for :head do %>
+    <%= javascript_include_tag "Chart.js" %>
+<% end %>
+
+<h2>Subscriptions</h2>
+<p>Subscriptions and un-subscriptions overview</p>
+<div style="height: 400px; padding: 15px; background-color: #F2F2F2;">
+  <div style="height: 100%;">
+    <div style="height: 100%; width: 70%; float: left;">
+      <canvas id="chart"></canvas>
+    </div>
+    <div style="width: 30%; float: left; padding-left:30px; padding-top:32px; height: 100%; overflow-y: scroll;">
+      <table>
+        <% @subscriptions_array.each do |subscription| %>
+            <tr>
+              <td>
+                <% if subscription.unsubscribed_at %>
+                    <span class="badge badge-danger-outline"><%= subscription.email %></span>
+                <% else %>
+                    <span class="badge badge-success-outline"><%= subscription.email %></span>
+                <% end %>
+              </td>
+              <td>
+                <%= distance_of_time_in_words(subscription.unsubscribed_at || subscription.subscribed_at, Time.now) %>
+              </td>
+            </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+    (function(){
+        var subscriptions_hash= <%= @subscriptions_hash.values.map {|f| f[0]}%>;
+        var unsubscriptions_hash = <%= @subscriptions_hash.values.map {|f| f[1]}%>;
+
+        var ctx = document.getElementById('chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: <%= raw @subscriptions_hash.keys %>,
+                datasets: [{
+                    label: "Subscriptions",
+                    backgroundColor: '#009900',
+                    borderColor: '#009900',
+                    data: subscriptions_hash
+                },{
+                    label: "Unsubscriptions",
+                    backgroundColor: '#a60908',
+                    borderColor: '#a60908',
+                    data: unsubscriptions_hash
+                }]
+            },
+
+            // Configuration options go here
+            options: {maintainAspectRatio: false}
+        });
+    })();
+
+</script>
+
+<h2>Bounces</h2>
+<p>number of time a message has been blocked by un-subscription policy</p>
+
+<div style="height: 400px; padding: 15px; background-color: #F2F2F2;">
+  <div style="height: 100%; width: 70%; float: left;">
+    <canvas id="bounces-chart"></canvas>
+  </div>
+</div>
+
+<script>
+    (function(){
+        var bounces = <%= @bounces_hash.values.map {|f| f[0]}%>;
+
+        var ctx = document.getElementById('bounces-chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: <%= raw @bounces_hash.keys %>,
+                datasets: [{
+                    label: "Bounces",
+                    backgroundColor: '#009900',
+                    borderColor: '#009900',
+                    data: bounces
+                }]
+            },
+
+            // Configuration options go here
+            options: {maintainAspectRatio: false}
+        });
+    })();
+
+</script>

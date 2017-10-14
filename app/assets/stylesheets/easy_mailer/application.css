@@ -152,3 +152,22 @@ table.table th {
 
 a span.badge {
     color: #444; }
+
+.badge {
+    display: inline-block;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 0.8em;
+    color: #FFF;
+    padding: 4px 8px;
+}
+
+.badge-success-outline {
+    border: solid 1px #009900;
+    color: #009900;
+}
+
+.badge-danger-outline {
+    border: solid 1px #a60908;
+    color: #a60908;
+}
