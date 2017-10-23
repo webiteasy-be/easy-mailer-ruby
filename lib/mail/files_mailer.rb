@@ -14,6 +14,10 @@ module Mail
   # Make sure the path you specify with :location is writable by the Ruby process
   # running Mail.
   class FilesMailer
+    if ::Mail::VERSION::STRING < '2.6.6'
+      include Mail::CheckDeliveryParams
+    end
+
     if RUBY_VERSION >= '1.9.1'
       require 'fileutils'
     else
@@ -34,7 +38,12 @@ module Mail
     end
 
     def deliver!(mail)
-      ::Mail::CheckDeliveryParams.check(mail)
+      # Use Mail::CheckDeliveryParams check method
+      if ::Mail::VERSION::STRING >= '2.6.6'
+        Mail::CheckDeliveryParams.check(mail)
+      else
+        check_delivery_params(mail)
+      end
 
       mailer = mail.header[settings[:header_mailer]] || settings[:default_mailer]
       model = mail.header[settings[:header_model]] || settings[:default_model]
