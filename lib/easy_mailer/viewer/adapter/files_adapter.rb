@@ -18,6 +18,23 @@ module EasyMailer
           }.merge(options)
         end
 
+        def process(mail, processor_options={})
+          if mail.delivery_method.is_a?( ::Mail::FilesMailer ) &&
+              mail.delivery_method.settings[:dir] == self.settings[:dir] &&
+              mail.delivery_method.settings[:path_tpl] == self.settings[:path_tpl]
+
+            mail.header[mail.delivery_method.settings[:header_model]] = processor_options[:model]
+            mail.header[mail.delivery_method.settings[:header_mailer]] = processor_options[:mailer]
+
+            # Nothing to do, it will already be saved as expected in options
+          else
+            mail.header[self.settings[:header_model]] = processor_options[:model]
+            mail.header[self.settings[:header_mailer]] = processor_options[:mailer]
+
+            ::Mail::FilesMailer.new(self.settings).deliver!(mail)
+          end
+        end
+
         # options.mailer
         # options.model
         # options.recipient
@@ -74,27 +91,6 @@ module EasyMailer
             ::Mail.read(file)
           rescue => e
             nil
-          end
-        end
-
-        def process(mail, processor_options={})
-
-          # Ensure message_id
-          mail.message_id ||= ::Mail.random_tag
-
-          if mail.delivery_method.is_a?( ::Mail::FilesMailer ) &&
-              mail.delivery_method.settings[:dir] == self.settings[:dir] && mail.delivery_method.settings[:path_tpl] == self.settings[:path_tpl]
-
-            mail.header[mail.delivery_method.settings[:header_model]] = processor_options[:model]
-            mail.header[mail.delivery_method.settings[:header_mailer]] = processor_options[:mailer]
-
-            # Nothing to do, it will already be saved as expected in options
-          else
-            # TODO test this case
-            mail.header[self.settings[:header_model]] = processor_options[:model]
-            mail.header[self.settings[:header_mailer]] = processor_options[:mailer]
-
-            ::Mail::FilesMailer.new(self.settings).deliver!(mail)
           end
         end
 

@@ -26,6 +26,28 @@ module EasyMailer
           #end
         end
 
+        def process(mail, processor_options={})
+          mail_record = settings[:model].find_or_initialize_by(_attr(:message_id) => mail.message_id)
+
+          mail_record.assign_attributes({
+                                            _attr(:mailer) => processor_options[:mailer],
+                                            _attr(:model) => processor_options[:model],
+                                        })
+
+          # Optional attributes
+          mail_record.send("#{_attr(:tos)}=", Array(mail.to).join(", ")) if mail_record.respond_to?("#{_attr(:tos)}=")
+          mail_record.send("#{_attr(:user)}=", processor_options[:user]) if mail_record.respond_to?("#{_attr(:user)}=")
+          mail_record.send("#{_attr(:subject)}=", mail.subject) if mail_record.respond_to?("#{_attr(:subject)}=")
+
+          EasyMailer::Tracker::MailProcessor::UTM_PARAMETERS.each do |k|
+            mail_record.send("#{_attr(k.to_sym)}=", processor_options[k.to_sym]) if mail_record.respond_to?("#{_attr(k.to_sym)}=")
+          end
+
+          mail_record.assign_attributes(processor_options[:mail_model_extra] || {})
+
+          mail_record.save!
+        end
+
         def find(message_id)
           self.settings[:model].find_by(_attr(:message_id) => message_id)
         end
@@ -66,31 +88,6 @@ module EasyMailer
             index << m
           end
           index
-        end
-
-        def process(mail, processor_options={})
-          @mail_model = settings[:model].new(
-              _attr(:message_id) => mail.message_id,
-              _attr(:mailer) => processor_options[:mailer],
-              _attr(:model) => processor_options[:model],
-          )
-
-          # Optional attributes
-          @mail_model.send("#{_attr(:tos)}=", Array(mail.to).join(", ")) if @mail_model.respond_to?("#{_attr(:tos)}=")
-          @mail_model.send("#{_attr(:user)}=", processor_options[:user]) if @mail_model.respond_to?("#{_attr(:user)}=")
-          @mail_model.send("#{_attr(:subject)}=", mail.subject) if @mail_model.respond_to?("#{_attr(:subject)}=")
-
-          # TODO save only if viewer is enabled and is use ActiveRecordAdapter
-          # TODO or, save it in Viewer adapter => we should be able to pass tracker interceptor to viewer interceptor
-          @mail_model.send("#{_attr(:message)}=", mail.encoded) if @mail_model.respond_to?("#{_attr(:message)}=")
-
-          EasyMailer::Tracker::MailProcessor::UTM_PARAMETERS.each do |k|
-            @mail_model.send("#{_attr(k.to_sym)}=", processor_options[k.to_sym]) if @mail_model.respond_to?("#{_attr(k.to_sym)}=")
-          end
-
-          @mail_model.assign_attributes(processor_options[:mail_model_extra] || {})
-
-          @mail_model.save!
         end
 
         private

@@ -9,9 +9,9 @@ module EasyMailer
       LINK_REGEX = /\{UNSUBSCRIBE_LINK\}/i
 
       def process
-        return unless options[:enabled]
+        EasyMailer.logger.info "EasyMailer::Subscriber::MailProcessor#process options = #{options.inspect}"
 
-        mail.message_id ||= ::Mail.random_tag
+        return unless options[:enabled]
 
         if EasyMailer::Subscriber::Options.adapter.bounce(mail, options)
           mail.perform_deliveries = false

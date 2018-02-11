@@ -10,9 +10,9 @@ module EasyMailer
       BODY_TAG_REGEX = /<\/body>/i
 
       def process
-        return unless options[:enabled]
+        EasyMailer.logger.info "EasyMailer::Tracker::MailProcessor#process options = #{options.inspect}"
 
-        mail.message_id ||= ::Mail.random_tag
+        return unless options[:enabled]
 
         track_open if options[:open]
         track_links if options[:utm_params] || options[:click]
