@@ -7,29 +7,8 @@ module EasyMailer
 
       base.class_eval do
         class << self
-          def options_for(feature)
-            raise "#{feature} not enabled" unless EasyMailer.feature_enabled?(feature)
-
-            send "#{feature}_options"
-          end
-
-          def easy_mailer_options
-            @easy_mailer_options ||= {}
-          end
-
-          def subscriber_options
-            self.easy_mailer_options[:subscriber] ||= EasyMailer::Subscriber::Options.new
-            #@tracker_options ||= EasyMailer::Tracker::Options.new
-          end
-
-          def tracker_options
-            self.easy_mailer_options[:tracker] ||= EasyMailer::Tracker::Options.new
-            #@tracker_options ||= EasyMailer::Tracker::Options.new
-          end
-
-          def viewer_options
-            self.easy_mailer_options[:viewer] ||= EasyMailer::Viewer::Options.new
-            #@viewer_options ||= EasyMailer::Viewer::Options.new
+          def em_mailer_options
+            @em_mailer_options ||= EasyMailer::Core::OptionsHolder.new
           end
         end
       end
@@ -44,7 +23,7 @@ module EasyMailer
 
         # pass options and model to the message, to be used in processors
         _message.model = EasyMailer::Core::Model.find_or_initialize(self)
-        _message.options = self.easy_mailer_message_options
+        _message.options = self.class.em_mailer_options.merge em_message_options
 
         # return the message, ready to be intercepted by the Interceptor
         _message
@@ -52,63 +31,61 @@ module EasyMailer
     end
 
     module ClassMethods
-      # set Tracker options to be used for every models of the ActionMailer
+
+      # set EasyMailer shared options to be used for every models of the
+      # ActionMailer
       #
       # == Example
       #
       # class UsersMailer < ApplicationMailer
-      #   track(click: false, open: false)
+      #   easy_mailer(mailer: 'registered_users')
       # end
       #
-      # will use these two options for every models, unless overwritten
-      # in the model code {@see InstanceMethod#track}
-      def track(options = {})
-        raise "Tracker not enabled" unless EasyMailer.tracker_enabled?
-
-        self.tracker_options.clear
-        self.tracker_options.merge!(options)
-      end
-
-      def subscribers(options = {})
-        # TODO
+      # == Example
+      #
+      # class UsersMailer < ApplicationMailer
+      #   easy_mailer(:tracker, click: false, open: false)
+      # end
+      #
+      def easy_mailer(feature = nil, **options)
+        if feature
+          em_mailer_options.feature_options(feature).merge! options
+        else
+          em_mailer_options.global_options.merge! options
+        end
       end
     end
 
     module InstanceMethods
 
-      def easy_mailer_message_options
-        @easy_mailer_message_options ||= {}
+      def em_message_options
+        @em_message_options ||= EasyMailer::Core::OptionsHolder.new
       end
 
-      #def options_for(feature)
-      #  self.class.feature_options(feature).merge( instance_variable_get("@#{feature}_options".to_sym) || {})
-      #end
-      #alias feature_options options_for
-
-      # Set Tracker options to be used for the current ActionMailer action
+      # class UsersMailer < ApplicationMailer
+      #   def welcome(user_id)
+      #     @user = User.find_by(id: user_id)
       #
+      #     easy_mailer(model: "welcome-#{Date.today.year}")
+      #     mail(to: @user.email, subject: 'welcome on my app')
+      #   end
+      # end
       # == Example
       #
       # class UsersMailer < ApplicationMailer
       #   def welcome(user_id)
       #     @user = User.find_by(id: user_id)
       #
-      #     track(click: false)
+      #     easy_mailer(:tracker, click: false)
       #     mail(to: @user.email, subject: 'welcome on my app')
       #   end
       # end
-      #
-      # will use these two options for every models, unless overwritten
-      # in the model code {@see InstanceMethod#track}
-      def track(options = {})
-        raise "Tracker not enabled" unless EasyMailer.tracker_enabled?
-
-        self.easy_mailer_message_options[:tracker] = {enabled: true}.merge(options)
-        # @tracker_options = {enabled: true}.merge(options)
-      end
-
-      def subscribers(options = {})
-        # TODO
+      def easy_mailer(feature = nil, **options)
+        if feature
+          em_message_options.feature_options(feature).merge! options
+        else
+          em_message_options.global_options.merge! options
+        end
       end
     end
   end

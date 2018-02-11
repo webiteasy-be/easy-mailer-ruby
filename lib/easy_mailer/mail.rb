@@ -26,16 +26,27 @@ module EasyMailer
         @model ||= EasyMailer::Core::Model::Default
       end
 
-      def options_for(feature)
-        self.options[feature]
+      def options_for(feature=nil)
+        feature = nil if feature == :easy_mailer
+
+        opts = options.options_for(feature)
+
+        opts.each do |k, v|
+          if v.respond_to?(:call)
+            opts[k] = v.call(self)
+          end
+        end
+
+        opts
       end
 
       def options=(options)
         @options = options
       end
 
+      private
       def options
-        @options ||= {}
+        @options ||= EasyMailer::Core::OptionsHolder.new
       end
     end
   end

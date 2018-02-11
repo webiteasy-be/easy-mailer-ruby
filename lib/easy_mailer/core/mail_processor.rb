@@ -9,17 +9,13 @@ module EasyMailer
       end
 
       def options
+        # generate options only once
         @options ||= begin
+
+          # Get feature from class name
           feature = self.class.name.underscore.split('/')[-2].to_sym
-          options = (mail.model.options_for(feature) || {}).merge(mail.options_for(feature) || {})
 
-          options.each do |k, v|
-            if v.respond_to?(:call)
-              options[k] = v.call(mail)
-            end
-          end
-
-          options
+          mail.options_for(feature)
         end
       end
 

@@ -12,6 +12,7 @@ module EasyMailer
       #
       def self.shared
         @@shared ||= {
+            message_record: EasyMailer::MailModel,
             mailer: proc { |mail| mail.model.mailer_name },
             model: proc { |mail| mail.model.name }
         }
@@ -25,7 +26,11 @@ module EasyMailer
 
         # returns the default set of values, shared with the current class and all its instances
         def default
-          @default ||= Hash.new
+          if self.class == EasyMailer::Core::Options
+            shared
+          else
+            @default ||= Hash.new
+          end
         end
 
         # Set the default set of values, shared with the current class and all its instances
@@ -101,6 +106,10 @@ module EasyMailer
 
       def to_s
         self.merge({}).to_s
+      end
+
+      def inner_merge
+        self.merge({})
       end
 
       def merge(*args, &block)
