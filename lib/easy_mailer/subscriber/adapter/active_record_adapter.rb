@@ -29,7 +29,7 @@ module EasyMailer
                  .where(_attr(:email) => message.to.first)
                  .where.not(_attr(:unsubscribed_at) => nil).any?
 
-            model = settings[:message_model].find_by(_attr(:message_id) => message.message_id)
+            model = settings[:message_model].find_or_initialize_by(_attr(:message_id) => message.message_id)
             if model && model.respond_to?(_attr(:bounced_at=))
               model.send(_attr(:bounced_at=), Time.now)
               model.save

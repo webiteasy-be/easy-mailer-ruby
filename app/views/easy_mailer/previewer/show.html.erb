@@ -67,7 +67,12 @@
 <% end %>
 
 <% if @email.is_a?(Exception) %>
-    <%= @email.message %>
+    <div style="background-color:rgb(248, 215, 218); border-bottom-color: rgb(245, 198, 203); color:rgb(114, 28, 36); padding: 15px;">
+      <p><%= @email.message %></p>
+      <p>
+        <%= @email.backtrace %>
+      </p>
+    </div>
 <% else %>
     <ul class="headers">
       <% if @email.subject %><li><b>Subject</b> <%= @email.subject %></li><% end %>

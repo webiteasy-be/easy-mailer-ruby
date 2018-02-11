@@ -20,6 +20,19 @@ module EasyMailer
           }.merge(options)
         end
 
+        def process(mail, processor_options={})
+
+          mail_record = settings[:model].find_or_initialize_by(_attr(:message_id) => mail.message_id)
+
+          mail_record.assign_attributes(
+              self.settings[:attributes][:message] || :message => mail.encoded,
+              self.settings[:attributes][:mailer] || :mailer => processor_options[:mailer],
+              self.settings[:attributes][:model] || :model => processor_options[:model],
+          )
+
+          mail_record.save
+        end
+
         def where(options={})
           messages_model = self.settings[:model].all
 
@@ -43,29 +56,9 @@ module EasyMailer
           ::Mail.read_from_string(message_model.send(self.settings[:attributes][:message] || :message)) if message_model
         end
 
-        def process(mail, processor_options={})
-
-          if EasyMailer.feature_enabled?(:tracker) &&
-              defined?(EasyMailer::Tracker::Adapter::ActiveRecordAdapter) &&
-              EasyMailer::Tracker::Options.adapter.is_a?(EasyMailer::Tracker::Adapter::ActiveRecordAdapter) &&
-              EasyMailer::Tracker::Options.adapter.settings[:model] == self.settings[:model]
-
-            # tracker is enabled + using ActiveRecord adapter + using the same model
-            # => will take care about saving everything
-            return
-          end
-
-          # Ensure message_id
-          mail.message_id ||= ::Mail.random_tag
-
-          message_model = self.settings[:model].new(
-              self.settings[:attributes][:message_id] || :message_id => mail.message_id,
-              self.settings[:attributes][:message] || :message => mail.encoded,
-              self.settings[:attributes][:mailer] || :mailer => processor_options[:mailer],
-              self.settings[:attributes][:model] || :model => processor_options[:model],
-          )
-
-          message_model.save
+        private
+        def _attr(attr)
+          self.settings[:attributes][attr] || attr
         end
       end
     end

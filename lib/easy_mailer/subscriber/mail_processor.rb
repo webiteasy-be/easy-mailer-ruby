@@ -9,9 +9,9 @@ module EasyMailer
       LINK_REGEX = /\{UNSUBSCRIBE_LINK\}/i
 
       def process
-        return unless options[:enabled]
+        EasyMailer.logger.info "EasyMailer::Subscriber::MailProcessor#process options = #{options.inspect}"
 
-        mail.message_id ||= ::Mail.random_tag
+        return unless options[:enabled]
 
         if EasyMailer::Subscriber::Options.adapter.bounce(mail, options)
           mail.perform_deliveries = false
@@ -23,25 +23,27 @@ module EasyMailer
 
       private
       def replace_unsubscribe_link
-        if html_part
-          raw_source = html_part.body.raw_source
+        url = url_for(
+            host: options[:host],
+            port: options[:port],
+            controller:'easy_mailer/subscriber',
+            action:'unsubscribe',
+            mailer: mail.model.mailer_name,
+            model: mail.model.name,
+            email: mail.to.first, # TODO what happen when multiple emails ?
+            message_id: mail.message_id,
+            signature: OpenSSL::HMAC.hexdigest(
+                OpenSSL::Digest.new("sha1"),
+                EasyMailer::Tracker.signature_secret,
+                mail.message_id || 'nil')
+        )
 
-          url = url_for(
-              host: options[:host],
-              port: options[:port],
-              controller:'easy_mailer/subscriber',
-              action:'unsubscribe',
-              mailer: mail.model.mailer_name,
-              model: mail.model.name,
-              email: mail.to.first, # TODO what happen when multiple emails ?
-              message_id: mail.message_id,
-              signature: OpenSSL::HMAC.hexdigest(
-                  OpenSSL::Digest.new("sha1"),
-                  EasyMailer::Tracker.signature_secret,
-                  mail.message_id || 'nil')
-          )
+        if mail.html_part
+          mail.html_part.body.raw_source.gsub!(LINK_REGEX, url)
+        end
 
-          raw_source.gsub!(LINK_REGEX, url)
+        if mail.text_part
+          mail.text_part.body.raw_source.gsub!(LINK_REGEX, url)
         end
       end
 

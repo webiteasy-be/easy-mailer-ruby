@@ -19,10 +19,6 @@ module EasyMailer
         mailer.find_model(action_mailer.action_name) || raise( "Unknown model #{action_mailer.action_name} for mailer #{mailer_name}" )
       end
 
-      def options_for(feature)
-        @mailer.options_for(feature)
-      end
-
       def all_parameters(prefix=nil)
         parameters.map{|p| (prefix ? prefix : '') + p.last.to_s }
       end

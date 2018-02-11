@@ -22,6 +22,14 @@ module EasyMailer
       self.mail_dir           = 'tmp/mails'
     end
 
+    def logger
+      if defined?(Rails)
+        Rails.logger
+      else
+        @logger ||= Logger.new(STDOUT)
+      end
+    end
+
     def setup
       init!
       yield(self) if block_given?
