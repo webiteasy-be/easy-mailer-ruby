@@ -4,7 +4,7 @@ module EasyMailer
     before_action :require_module_loaded
 
     def index
-      @mails = EasyMailer::Viewer.adapter.where
+      @mails = EasyMailer::Viewer.adapter.where(mailer: params[:mailer], model: params[:model])
     end
 
     def show
