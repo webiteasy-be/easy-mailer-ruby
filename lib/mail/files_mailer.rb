@@ -45,12 +45,11 @@ module Mail
         check_delivery_params(mail)
       end
 
-      mailer = mail.header[settings[:header_mailer]] || settings[:default_mailer]
-      model = mail.header[settings[:header_model]] || settings[:default_model]
+      mailer = mail.model ? mail.model.mailer_name : mail.header[settings[:header_mailer]] || settings[:default_mailer]
+      model = mail.model ? mail.model.name : mail.header[settings[:header_model]] || settings[:default_model]
 
       message_id = (mail.message_id ||= ::Mail.random_tag)
 
-      Mail::Field
       mail.destinations.uniq.each do |to|
         mail_path = ::File.join(settings[:dir], settings[:path_tpl]).to_s
                         .gsub(':mailer', mailer.to_s)
