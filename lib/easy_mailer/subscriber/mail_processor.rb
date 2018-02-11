@@ -34,6 +34,7 @@ module EasyMailer
             message_id: mail.message_id,
             signature: OpenSSL::HMAC.hexdigest(
                 OpenSSL::Digest.new("sha1"),
+                # TODO signature secret from subscriber
                 EasyMailer::Tracker.signature_secret,
                 mail.message_id || 'nil')
         )
@@ -47,15 +48,12 @@ module EasyMailer
         end
       end
 
-      def html_part
-        mail.html_part || (mail.content_type =~ /html/ ? mail : nil)
-      end
-
       def url_for(opt)
         opt = (::ActionMailer::Base.default_url_options || {})
                   .merge(options[:url_options])
                   .merge(opt)
 
+        # TODO how it behaves without Rails ?
         EasyMailer::Engine.routes.url_helpers.url_for(opt)
       end
     end
