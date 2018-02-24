@@ -7,14 +7,13 @@ require 'easy_mailer/rails' if defined?(Rails)
 module EasyMailer
 
   class << self
-    attr_accessor :enabled, :allow_edit, :allow_deliver, :available_locales,
+    attr_accessor :enabled, :allow_edit, :allow_deliver,
                   :base_controller, :mailer_args_prefix, :mail_dir, :default_mailer, :default_model
 
     def init!
       self.enabled            = Rails.env.production? ? false : true
       self.allow_edit         = Rails.env.production? ? false : true
       self.allow_deliver      = Rails.env.production? ? false : true
-      self.available_locales  = I18n.available_locales
       self.default_model      = 'mail'
       self.default_mailer     = 'application_mailer'
       self.base_controller    = 'ActionController::Base'

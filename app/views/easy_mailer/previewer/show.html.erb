@@ -12,15 +12,13 @@
                         ) %>
     </li>
 
-    <% if EasyMailer.available_locales.present? %>
         <li class="dropdown"> Languages
           <ul>
-            <% EasyMailer.available_locales.each do |locale| %>
-                <li><%= link_to locale.upcase, url_for(params.to_unsafe_h.merge(locale: locale)) %></li>
+            <% I18n.available_locales.each do |locale| %>
+                <li><%= link_to locale.to_s.upcase, url_for(params.to_unsafe_h.merge(locale: locale)) %></li>
             <% end %>
           </ul>
         </li>
-    <% end %>
 
     <% unless @email.is_a?(Exception) %>
         <li>|</li>
@@ -37,6 +35,9 @@
 
 <% if @draft.model.parameters.any? %>
     <%= form_tag '', method: :get do %>
+    <% if params[:locale] %>
+      <%= hidden_field_tag :locale, params[:locale] %>
+    <% end %>
         <div id="email-arguments" style="display:<%= @email.is_a?(Exception) ? 'block' : 'none'%>;">
           <table class="table" style="width:100%; text-align: left;">
             <tr>
