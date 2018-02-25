@@ -11,7 +11,7 @@ module EasyMailer
 
     def show
       begin
-        @email = @draft.params(params).to_mail
+        load_email
 
         if @email.nil? || @email.to_s.start_with?('#<ActionMailer::Base::NullMail')
           @email = StandardError.new("no email generated for these parameters")
@@ -75,11 +75,19 @@ module EasyMailer
     end
 
     def load_email
-      @email = @draft.params(params).to_mail
+      draft_params = {}
+      params.each do |key, value|
+        if key.to_s.starts_with?(EasyMailer.mailer_args_prefix)
+          key = key[EasyMailer.mailer_args_prefix.length..-1]
+          draft_params[key] = value
+        end
+      end
+
+      @email = @draft.params(draft_params).to_mail
     end
 
     def perform_with_locale
-      I18n.with_locale(params[:locale]) do
+      I18n.with_locale(params[EasyMailer.mailer_args_prefix + 'locale']) do
         yield
       end
     end

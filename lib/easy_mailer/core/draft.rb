@@ -21,9 +21,7 @@ module EasyMailer
       def to_mail
         args = []
         @model.parameters.each do |param|
-          if @params.has_key?(EasyMailer.mailer_args_prefix + param.last.to_s)
-            args << @params[EasyMailer.mailer_args_prefix + param.last.to_s]
-          end
+          args << @params[param.last.to_s] if @params.has_key?(param.last.to_s)
         end
 
         args.map! { |a|
