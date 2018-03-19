@@ -19,11 +19,9 @@ module EasyMailer
               attributes: {}
           }.merge(options)
 
-          #[:message_id, :mailer, :model, :tos, :created_at, :sent_at , :opened_at , :clicked_at].each do |c|
-          #  if (settings[:model].public_method_defined?(c) || settings[:model].columns_hash.key?(c.to_s)) && !settings[:attributes].key?(c)
-          #    settings[:attributes][c] = c
-          #  end
-          #end
+          [:message_id, :mailer, :model, :tos, :created_at, :sent_at , :opened_at , :clicked_at].each do |c|
+            settings[:attributes][c] = c
+          end
         end
 
         def process(mail, processor_options={})

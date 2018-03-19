@@ -41,9 +41,11 @@ module EasyMailer
 
         def unsubscribe(options)
           if options[:message_id]
-            model = settings[:message_model].find_by(_attr(:message_id) => options[:message_id])
+            model = settings[:message_model].find_or_initialize_by(_attr(:message_id) => options[:message_id])
+
             if model && model.respond_to?(_attr(:unsubscribed_at=))
               model.send(_attr(:unsubscribed_at=), Time.now)
+              model.save
             end
           end
 
@@ -83,6 +85,12 @@ module EasyMailer
                                 .where.not(unsubscribed_at: nil)
                                 .where('unsubscribed_at >= ?', options[:created_after])
                                 .where('unsubscribed_at <= ?', options[:created_before])
+
+          subscriptions = subscriptions.where(mailer: options[:mailer]) if options[:mailer]
+          subscriptions = subscriptions.where(model: options[:model]) if options[:model]
+
+          unsubscriptions = unsubscriptions.where(mailer: options[:mailer]) if options[:mailer]
+          unsubscriptions = unsubscriptions.where(model: options[:model]) if options[:model]
 
           @data = {}
 
@@ -145,6 +153,9 @@ module EasyMailer
               .where.not(_attr(:bounced_at) => nil)
               .where("#{_attr(:bounced_at)} >= ?", options[:created_after])
               .where("#{_attr(:bounced_at)} <= ?", options[:created_before])
+
+          bounces = bounces.where(mailer: options[:mailer]) if options[:mailer]
+          bounces = bounces.where(model: options[:model]) if options[:model]
 
           data = {}
 

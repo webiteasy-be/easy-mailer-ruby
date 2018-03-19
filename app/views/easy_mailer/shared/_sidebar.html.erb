@@ -14,9 +14,6 @@
               <li class="<%=  (mailer.name == params[:mailer] && EasyMailer.default_model == params[:model]) ? 'active' : '' %>">
                 <%= link_to "#{EasyMailer.default_model.humanize} (default)",
                             easy_draft_path(mailer: mailer.name, model: EasyMailer.default_model) %>
-
-                (<%= Dir[Rails.root.join(EasyMailer.mail_dir, '*')].length %>)
-
               </li>
           <% elsif (params[:controller] == 'easy_mailer/tracker') &&
                   mailer.name == EasyMailer.default_mailer %>
@@ -35,6 +32,12 @@
               <% elsif params[:controller] =='easy_mailer/tracker' %>
                   <li class="<%=  (mailer.name == params[:mailer] && draft.name == params[:model]) ? 'active' : '' %>">
                     <%= link_to easy_track_model_path(mailer: mailer.name, model: draft.name) do %>
+                        <%= draft.name.humanize %>
+                    <% end %>
+                  </li>
+              <% elsif params[:controller] =='easy_mailer/subscriber' %>
+                  <li class="<%=  (mailer.name == params[:mailer] && draft.name == params[:model]) ? 'active' : '' %>">
+                    <%= link_to easy_model_subscriber_path(mailer: mailer.name, model: draft.name) do %>
                         <%= draft.name.humanize %>
                     <% end %>
                   </li>

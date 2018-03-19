@@ -12,20 +12,18 @@
                         ) %>
     </li>
 
-    <% if EasyMailer.available_locales.present? %>
         <li class="dropdown"> Languages
           <ul>
-            <% EasyMailer.available_locales.each do |locale| %>
-                <li><%= link_to locale.upcase, url_for(params.to_unsafe_h.merge(locale: locale)) %></li>
+            <% I18n.available_locales.each do |locale| %>
+                <li><%= link_to locale.to_s.upcase, url_for(params.to_unsafe_h.merge("#{EasyMailer.mailer_args_prefix}locale" => locale)) %></li>
             <% end %>
           </ul>
         </li>
-    <% end %>
 
     <% unless @email.is_a?(Exception) %>
         <li>|</li>
         <li>
-          <%= form_tag easy_deliver_draft_path(params.permit([:locale, :mailer, :model] + @draft.model.all_parameters(EasyMailer.mailer_args_prefix))), method: :post do %>
+          <%= form_tag easy_deliver_draft_path(params.permit(["#{EasyMailer.mailer_args_prefix}locale", :mailer, :model] + @draft.model.all_parameters(EasyMailer.mailer_args_prefix))), method: :post do %>
               Send to
               <%= email_field_tag :to, @email.to, placeholder: "Enter email", required: true %>
               <%= submit_tag 'Send' %>
@@ -37,6 +35,9 @@
 
 <% if @draft.model.parameters.any? %>
     <%= form_tag '', method: :get do %>
+    <% if params["#{EasyMailer.mailer_args_prefix}locale"] %>
+      <%= hidden_field_tag "#{EasyMailer.mailer_args_prefix}locale", params["#{EasyMailer.mailer_args_prefix}locale"] %>
+    <% end %>
         <div id="email-arguments" style="display:<%= @email.is_a?(Exception) ? 'block' : 'none'%>;">
           <table class="table" style="width:100%; text-align: left;">
             <tr>
@@ -99,7 +100,7 @@
         <iframe onload='resizeIframe(this);'
                 src="<%= easy_raw_draft_path(
                                  params.permit(
-                                         [:mailer, :model, :locale, :part] +
+                                         [:mailer, :model, "#{EasyMailer.mailer_args_prefix}locale", :part] +
                                                  @draft.model.all_parameters(EasyMailer.mailer_args_prefix)
                                  )
                          ) %>"
